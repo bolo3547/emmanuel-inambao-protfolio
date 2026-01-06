@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles for engineering portfolio */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-dark-950 text-dark-100 antialiased;
+  }
+
+  /* Custom scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-dark-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-dark-500;
+  }
+
+  /* Selection colors */
+  ::selection {
+    @apply bg-primary-600/40 text-white;
+  }
+}
+
+@layer components {
+  /* Primary button style */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 
+           bg-primary-600 text-white font-medium rounded-lg
+           hover:bg-primary-700 transition-all duration-300
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900;
+  }
+
+  /* Secondary button style */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3
+           border border-dark-600 text-dark-200 font-medium rounded-lg
+           hover:border-primary-500 hover:text-primary-400 transition-all duration-300
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900;
+  }
+
+  /* Accent button style */
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3
+           bg-accent-500 text-dark-900 font-medium rounded-lg
+           hover:bg-accent-400 transition-all duration-300
+           focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-dark-900;
+  }
+
+  /* Section container */
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section heading */
+  .section-heading {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4;
+  }
+
+  /* Section subheading */
+  .section-subheading {
+    @apply text-lg text-dark-400 max-w-2xl;
+  }
+
+  /* Card base style */
+  .card {
+    @apply bg-dark-800/50 border border-dark-700 rounded-xl p-6
+           hover:border-primary-500/50 transition-all duration-300;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent;
+  }
+
+  /* Glow effect */
+  .glow {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.15);
+  }
+
+  /* Tech badge */
+  .tech-badge {
+    @apply inline-flex items-center px-3 py-1 text-sm font-medium
+           bg-dark-800 text-dark-300 rounded-full border border-dark-700;
+  }
+}
+
+@layer utilities {
+  /* Text balance for better readability */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
