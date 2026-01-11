@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
+import { v2 as cloudinary } from 'cloudinary'
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Cloudinary is configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return NextResponse.json(
+        { error: 'Cloudinary not configured. Please set environment variables.' },
+        { status: 500 }
+      )
+    }
+
     const formData = await request.formData()
     const file = formData.get('file') as File
     const type = formData.get('type') as string // 'profile' or 'project'
@@ -27,41 +40,46 @@ export async function POST(request: NextRequest) {
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json(
         { error: 'File too large. Maximum size is 5MB' },
-        { status: 400 }
+        { status: 500 }
       )
     }
 
+    // Convert file to base64 for Cloudinary upload
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+    const base64 = buffer.toString('base64')
+    const dataURI = `data:${file.type};base64,${base64}`
 
-    // Determine save path
-    let subDir = 'uploads'
-    let fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+    // Determine folder and public_id for Cloudinary
+    let folder = 'portfolio/uploads'
+    let publicId = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_').replace(/\.[^/.]+$/, '')}`
 
     if (type === 'profile') {
-      subDir = 'images/profile'
-      fileName = `profile.${file.name.split('.').pop()}`
+      folder = 'portfolio/profile'
+      publicId = 'profile-picture'
     } else if (type === 'project' && projectId) {
-      subDir = 'images/projects'
-      fileName = `${projectId}-${Date.now()}.${file.name.split('.').pop()}`
+      folder = 'portfolio/projects'
+      publicId = `project-${projectId}-${Date.now()}`
     }
 
-    const publicDir = path.join(process.cwd(), 'public', subDir)
-    
-    // Ensure directory exists
-    if (!existsSync(publicDir)) {
-      await mkdir(publicDir, { recursive: true })
-    }
-
-    const filePath = path.join(publicDir, fileName)
-    await writeFile(filePath, buffer)
-
-    const publicUrl = `/${subDir}/${fileName}`
+    // Upload to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(dataURI, {
+      folder,
+      public_id: publicId,
+      overwrite: true,
+      resource_type: 'image',
+      transformation: [
+        { width: 1200, height: 1200, crop: 'limit' }, // Max dimensions
+        { quality: 'auto:good' }, // Auto optimize quality
+        { fetch_format: 'auto' }, // Auto format (webp, etc.)
+      ],
+    })
 
     return NextResponse.json({
       success: true,
-      url: publicUrl,
-      fileName,
+      url: uploadResult.secure_url,
+      publicId: uploadResult.public_id,
+      fileName: file.name,
     })
   } catch (error) {
     console.error('Upload error:', error)
