@@ -12,6 +12,11 @@
     @apply bg-dark-950 text-dark-100 antialiased;
   }
 
+  /* Light mode body styles */
+  html.light body {
+    @apply bg-slate-50 text-slate-900;
+  }
+
   /* Custom scrollbar for dark theme */
   ::-webkit-scrollbar {
     width: 8px;
@@ -30,9 +35,26 @@
     @apply bg-dark-500;
   }
 
+  /* Light mode scrollbar */
+  html.light ::-webkit-scrollbar-track {
+    @apply bg-slate-100;
+  }
+
+  html.light ::-webkit-scrollbar-thumb {
+    @apply bg-slate-400 rounded-full;
+  }
+
+  html.light ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
+
   /* Selection colors */
   ::selection {
     @apply bg-primary-600/40 text-white;
+  }
+
+  html.light ::selection {
+    @apply bg-primary-500/30 text-slate-900;
   }
 }
 
@@ -69,6 +91,11 @@
   /* Section heading */
   .section-heading {
     @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4;
+  }
+
+  /* Light mode section heading */
+  html.light .section-heading {
+    @apply text-slate-900;
   }
 
   /* Section subheading */

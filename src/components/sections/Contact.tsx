@@ -71,22 +71,32 @@ export default function Contact() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Handle form submission (frontend only)
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle form submission via API
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormStatus('idle')
     
-    // Simulate form submission
-    // In production, integrate with your preferred backend/service
-    console.log('Form submitted:', formData)
-    
-    // Show success state
-    setFormStatus('success')
-    
-    // Reset form after delay
-    setTimeout(() => {
-      setFormData({ name: '', email: '', subject: '', message: '' })
-      setFormStatus('idle')
-    }, 3000)
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      
+      const result = await response.json()
+      
+      if (response.ok && result.success) {
+        setFormStatus('success')
+        setTimeout(() => {
+          setFormData({ name: '', email: '', subject: '', message: '' })
+          setFormStatus('idle')
+        }, 3000)
+      } else {
+        setFormStatus('error')
+      }
+    } catch {
+      setFormStatus('error')
+    }
   }
 
   const containerVariants = {

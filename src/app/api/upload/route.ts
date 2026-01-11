@@ -75,15 +75,31 @@ export async function POST(request: NextRequest) {
 
     // Validate file type based on upload type
     const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    const videoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo']
     const documentTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
     
     const isCV = type === 'cv'
-    const validTypes = isCV ? [...documentTypes, ...imageTypes] : imageTypes
+    const isVideo = type === 'video' || type === 'testimonial-video'
+    
+    let validTypes: string[]
+    if (isCV) {
+      validTypes = [...documentTypes, ...imageTypes]
+    } else if (isVideo) {
+      validTypes = videoTypes
+    } else {
+      validTypes = imageTypes
+    }
     
     if (!validTypes.includes(file.type)) {
       if (isCV) {
         return NextResponse.json(
           { error: 'Invalid file type. Use PDF, DOC, DOCX, or image files' },
+          { status: 400 }
+        )
+      }
+      if (isVideo) {
+        return NextResponse.json(
+          { error: 'Invalid video type. Use MP4, WebM, MOV, or AVI' },
           { status: 400 }
         )
       }
@@ -93,11 +109,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file size (max 10MB for CV, 5MB for images)
-    const maxSize = isCV ? 10 * 1024 * 1024 : 5 * 1024 * 1024
+    // Validate file size (max 100MB for videos, 10MB for CV, 5MB for images)
+    let maxSize: number
+    if (isVideo) {
+      maxSize = 100 * 1024 * 1024 // 100MB for videos
+    } else if (isCV) {
+      maxSize = 10 * 1024 * 1024 // 10MB for CV
+    } else {
+      maxSize = 5 * 1024 * 1024 // 5MB for images
+    }
+    
     if (file.size > maxSize) {
+      const maxSizeStr = isVideo ? '100MB' : isCV ? '10MB' : '5MB'
       return NextResponse.json(
-        { error: `File too large. Maximum size is ${isCV ? '10MB' : '5MB'}` },
+        { error: `File too large. Maximum size is ${maxSizeStr}` },
         { status: 400 }
       )
     }
@@ -121,12 +146,34 @@ export async function POST(request: NextRequest) {
     } else if (type === 'project' && projectId) {
       folder = 'portfolio/projects'
       publicId = `project-${projectId}-${Date.now()}`
+    } else if (type === 'video' || type === 'testimonial-video') {
+      folder = 'portfolio/videos'
+      publicId = `video-${Date.now()}`
+    } else if (type === 'testimonial') {
+      folder = 'portfolio/testimonials'
+      publicId = `testimonial-${Date.now()}`
+    } else if (type === 'certification') {
+      folder = 'portfolio/certifications'
+      publicId = `certification-${Date.now()}`
+    } else if (type === 'experience') {
+      folder = 'portfolio/experience'
+      publicId = `experience-${Date.now()}`
+    } else if (type === 'service') {
+      folder = 'portfolio/services'
+      publicId = `service-${Date.now()}`
     }
 
     // Determine resource type based on file
     const isPDF = file.type === 'application/pdf'
     const isDocument = file.type.includes('document') || file.type.includes('msword')
-    const resourceType = (isPDF || isDocument) ? 'raw' : 'image'
+    const isVideoFile = videoTypes.includes(file.type)
+    
+    let resourceType: 'image' | 'video' | 'raw' = 'image'
+    if (isPDF || isDocument) {
+      resourceType = 'raw'
+    } else if (isVideoFile) {
+      resourceType = 'video'
+    }
 
     // Upload to Cloudinary
     const uploadOptions: Record<string, unknown> = {

@@ -6,15 +6,20 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plus, Edit2, Trash2, LogOut, Save, X, Cpu, 
   FolderOpen, ExternalLink, Github, Image as ImageIcon,
-  User, Upload, Camera, Check, AlertCircle
+  User, Upload, Camera, Check, AlertCircle, Briefcase,
+  Quote, Award, Settings
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { useProjects, Project } from '@/lib/projects'
 import { useProfile, Profile } from '@/lib/profile'
 import Link from 'next/link'
 import Image from 'next/image'
+import ExperienceEditor from '@/components/admin/ExperienceEditor'
+import TestimonialEditor from '@/components/admin/TestimonialEditor'
+import CertificationEditor from '@/components/admin/CertificationEditor'
+import ServiceEditor from '@/components/admin/ServiceEditor'
 
-type TabType = 'projects' | 'profile'
+type TabType = 'projects' | 'profile' | 'experience' | 'testimonials' | 'certifications' | 'services'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -147,10 +152,10 @@ export default function AdminDashboard() {
       {/* Tabs */}
       <div className="bg-dark-900/50 border-b border-dark-700">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1">
+          <div className="flex gap-1 overflow-x-auto pb-px">
             <button
               onClick={() => setActiveTab('projects')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors border-b-2 -mb-px ${
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 activeTab === 'projects'
                   ? 'text-primary-400 border-primary-500'
                   : 'text-dark-400 border-transparent hover:text-white'
@@ -161,7 +166,7 @@ export default function AdminDashboard() {
             </button>
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors border-b-2 -mb-px ${
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 activeTab === 'profile'
                   ? 'text-primary-400 border-primary-500'
                   : 'text-dark-400 border-transparent hover:text-white'
@@ -169,6 +174,50 @@ export default function AdminDashboard() {
             >
               <User className="w-5 h-5" />
               Profile
+            </button>
+            <button
+              onClick={() => setActiveTab('experience')}
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === 'experience'
+                  ? 'text-primary-400 border-primary-500'
+                  : 'text-dark-400 border-transparent hover:text-white'
+              }`}
+            >
+              <Briefcase className="w-5 h-5" />
+              Experience
+            </button>
+            <button
+              onClick={() => setActiveTab('testimonials')}
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === 'testimonials'
+                  ? 'text-primary-400 border-primary-500'
+                  : 'text-dark-400 border-transparent hover:text-white'
+              }`}
+            >
+              <Quote className="w-5 h-5" />
+              Testimonials
+            </button>
+            <button
+              onClick={() => setActiveTab('certifications')}
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === 'certifications'
+                  ? 'text-primary-400 border-primary-500'
+                  : 'text-dark-400 border-transparent hover:text-white'
+              }`}
+            >
+              <Award className="w-5 h-5" />
+              Certifications
+            </button>
+            <button
+              onClick={() => setActiveTab('services')}
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === 'services'
+                  ? 'text-primary-400 border-primary-500'
+                  : 'text-dark-400 border-transparent hover:text-white'
+              }`}
+            >
+              <Settings className="w-5 h-5" />
+              Services
             </button>
           </div>
         </div>
@@ -358,7 +407,7 @@ export default function AdminDashboard() {
                 )}
               </div>
             </motion.div>
-          ) : (
+          ) : activeTab === 'profile' ? (
             <motion.div
               key="profile"
               initial={{ opacity: 0, x: 20 }}
@@ -374,7 +423,51 @@ export default function AdminDashboard() {
                 }}
               />
             </motion.div>
-          )}
+          ) : activeTab === 'experience' ? (
+            <motion.div
+              key="experience"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <ExperienceEditor 
+                onNotify={(type, message) => setNotification({ type, message })}
+              />
+            </motion.div>
+          ) : activeTab === 'testimonials' ? (
+            <motion.div
+              key="testimonials"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <TestimonialEditor 
+                onNotify={(type, message) => setNotification({ type, message })}
+              />
+            </motion.div>
+          ) : activeTab === 'certifications' ? (
+            <motion.div
+              key="certifications"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <CertificationEditor 
+                onNotify={(type, message) => setNotification({ type, message })}
+              />
+            </motion.div>
+          ) : activeTab === 'services' ? (
+            <motion.div
+              key="services"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <ServiceEditor 
+                onNotify={(type, message) => setNotification({ type, message })}
+              />
+            </motion.div>
+          ) : null}
         </AnimatePresence>
 
         {/* Quick links */}

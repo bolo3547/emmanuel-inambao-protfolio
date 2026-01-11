@@ -99,28 +99,33 @@ export default function Hero() {
 
       {/* Main content */}
       <div className="section-container relative z-10 py-20 lg:py-0">
+        {/* Profile Image - Top right on desktop */}
+        {profile.image && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="lg:absolute lg:top-24 lg:right-8 xl:right-16 2xl:right-24 mb-8 lg:mb-0 flex justify-center lg:justify-end"
+          >
+            <div className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56 rounded-full overflow-hidden border-4 border-primary-500/30 shadow-2xl shadow-primary-500/20 ring-4 ring-dark-800/50">
+              <Image
+                src={profile.image}
+                alt={profile.name}
+                width={224}
+                height={224}
+                className="w-full h-full object-cover"
+                priority
+              />
+            </div>
+          </motion.div>
+        )}
+
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-4xl mx-auto text-center"
+          className="max-w-4xl lg:max-w-3xl mx-auto lg:mx-0 text-center lg:text-left"
         >
-          {/* Profile Image */}
-          {profile.image && (
-            <motion.div variants={itemVariants} className="mb-6 flex justify-center">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-500/30 shadow-2xl shadow-primary-500/20">
-                <Image
-                  src={profile.image}
-                  alt={profile.name}
-                  width={160}
-                  height={160}
-                  className="w-full h-full object-cover"
-                  priority
-                />
-              </div>
-            </motion.div>
-          )}
-
           {/* Status badge */}
           <motion.div variants={itemVariants} className="mb-6">
             <span className="inline-flex items-center gap-2 px-4 py-2 bg-dark-800/80 border border-dark-700 rounded-full text-sm text-dark-300">
@@ -156,7 +161,7 @@ export default function Hero() {
           {/* CTA Buttons */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4"
           >
             <Link href="#projects" className="btn-primary group">
               View Projects
@@ -185,7 +190,7 @@ export default function Hero() {
           {/* Location */}
           <motion.p
             variants={itemVariants}
-            className="mt-8 text-dark-500 text-sm"
+            className="mt-8 text-dark-500 text-sm lg:text-left"
           >
             📍 {profile.location}
           </motion.p>

@@ -2,6 +2,10 @@ import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
 import Skills from '@/components/sections/Skills'
 import Projects from '@/components/sections/Projects'
+import Experience from '@/components/sections/Experience'
+import Services from '@/components/sections/Services'
+import Certifications from '@/components/sections/Certifications'
+import Testimonials from '@/components/sections/Testimonials'
 import Education from '@/components/sections/Education'
 import Gallery from '@/components/sections/Gallery'
 import Contact from '@/components/sections/Contact'
@@ -25,8 +29,20 @@ export default function Home() {
       {/* Skills Section - Technical expertise grouped by domain */}
       <Skills />
       
+      {/* Services Section - What services you offer */}
+      <Services />
+      
       {/* Projects Section - Featured engineering projects with details */}
       <Projects />
+      
+      {/* Experience Section - Work history timeline */}
+      <Experience />
+      
+      {/* Certifications Section - Professional credentials */}
+      <Certifications />
+      
+      {/* Testimonials Section - Client reviews with video support */}
+      <Testimonials />
       
       {/* Education Section - Mentorship and teaching programs */}
       <Education />

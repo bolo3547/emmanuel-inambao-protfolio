@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Cpu } from 'lucide-react'
 import Link from 'next/link'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 // Navigation links configuration
 const navLinks = [
@@ -12,6 +13,7 @@ const navLinks = [
   { href: '#projects', label: 'Projects' },
   { href: '#education', label: 'Education' },
   { href: '#gallery', label: 'Gallery' },
+  { href: '/blog', label: 'Blog' },
   { href: '#contact', label: 'Contact' },
 ]
 
@@ -37,7 +39,7 @@ export default function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-dark-950/95 backdrop-blur-md border-b border-dark-800'
+          ? 'bg-dark-950/95 light:bg-white/95 backdrop-blur-md border-b border-dark-800 light:border-slate-200'
           : 'bg-transparent'
       }`}
     >
@@ -59,11 +61,12 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-dark-300 hover:text-white transition-colors duration-200 font-medium"
+                className="text-dark-300 light:text-slate-600 hover:text-white light:hover:text-slate-900 transition-colors duration-200 font-medium"
               >
                 {link.label}
               </Link>
             ))}
+            <ThemeToggle />
             <Link href="#contact" className="btn-primary text-sm">
               Get In Touch
             </Link>
@@ -96,7 +99,7 @@ export default function Navbar() {
               transition={{ duration: 0.3 }}
               className="lg:hidden overflow-hidden"
             >
-              <div className="py-4 space-y-2 border-t border-dark-800">
+              <div className="py-4 space-y-2 border-t border-dark-800 light:border-slate-200">
                 {navLinks.map((link, index) => (
                   <motion.div
                     key={link.href}
@@ -107,7 +110,7 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       onClick={handleLinkClick}
-                      className="block py-3 px-4 text-dark-300 hover:text-white hover:bg-dark-800/50 
+                      className="block py-3 px-4 text-dark-300 light:text-slate-600 hover:text-white light:hover:text-slate-900 hover:bg-dark-800/50 light:hover:bg-slate-100 
                                  rounded-lg transition-all duration-200 font-medium"
                     >
                       {link.label}
