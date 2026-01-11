@@ -10,7 +10,7 @@ import { ExperienceProvider } from '@/lib/experience'
 import { TestimonialProvider } from '@/lib/testimonials'
 import { CertificationProvider } from '@/lib/certifications'
 import { ServiceProvider } from '@/lib/services'
-import { ThemeProvider } from '@/lib/theme'
+import { ThemeProvider } from '@/components/ui/ThemeToggle'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

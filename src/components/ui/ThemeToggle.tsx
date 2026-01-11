@@ -1,11 +1,82 @@
 'use client'
 
 import { Moon, Sun } from 'lucide-react'
-import { useTheme } from '@/lib/theme'
 import { motion } from 'framer-motion'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+
+type Theme = 'dark' | 'light'
+
+interface ThemeContextType {
+  theme: Theme
+  toggleTheme: () => void
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+export function useTheme() {
+  const context = useContext(ThemeContext)
+  // Return default values if outside provider (for SSR)
+  if (!context) {
+    return { theme: 'dark' as Theme, toggleTheme: () => {} }
+  }
+  return context
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>('dark')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const stored = localStorage.getItem('theme') as Theme | null
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    
+    if (stored) {
+      setThemeState(stored)
+    } else if (!systemPrefersDark) {
+      setThemeState('light')
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    
+    const root = document.documentElement
+    if (theme === 'light') {
+      root.classList.add('light')
+      root.classList.remove('dark')
+    } else {
+      root.classList.add('dark')
+      root.classList.remove('light')
+    }
+    localStorage.setItem('theme', theme)
+  }, [theme, mounted])
+
+  const toggleTheme = () => {
+    setThemeState(prev => prev === 'dark' ? 'light' : 'dark')
+  }
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Don't render toggle until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="p-2 rounded-lg bg-dark-800/50 w-9 h-9" />
+    )
+  }
 
   return (
     <button
