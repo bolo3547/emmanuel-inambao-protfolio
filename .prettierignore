@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Cache
+.cache/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+next-env.d.ts
+public/

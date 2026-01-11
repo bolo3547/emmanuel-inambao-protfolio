@@ -2,16 +2,11 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 
-// Admin credentials (in production, use proper auth like NextAuth.js)
-// You can override these by adding NEXT_PUBLIC_ADMIN_EMAIL and NEXT_PUBLIC_ADMIN_PASSWORD in your environment
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'denuelinambao@gmail.com'
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123' // Change this to a secure password
-
 interface AuthContextType {
   isAuthenticated: boolean
   user: { email: string } | null
-  login: (email: string, password: string) => Promise<boolean>
-  logout: () => void
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  logout: () => Promise<void>
   isLoading: boolean
 }
 
@@ -22,45 +17,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<{ email: string } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Check for existing session on mount
+  // Check for existing session on mount (via server API)
   useEffect(() => {
-    const checkAuth = () => {
-      const storedAuth = localStorage.getItem('portfolio_auth')
-      if (storedAuth) {
-        try {
-          const authData = JSON.parse(storedAuth)
-          if (authData.email && authData.expiry > Date.now()) {
-            setIsAuthenticated(true)
-            setUser({ email: authData.email })
-          } else {
-            localStorage.removeItem('portfolio_auth')
-          }
-        } catch {
-          localStorage.removeItem('portfolio_auth')
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/session')
+        const data = await res.json()
+        if (data.authenticated) {
+          setIsAuthenticated(true)
+          setUser(data.user)
         }
+      } catch {
+        // Session check failed, user is not authenticated
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
     checkAuth()
   }, [])
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simple authentication check
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      const authData = {
-        email,
-        expiry: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      
+      const data = await res.json()
+      
+      if (res.ok && data.success) {
+        setIsAuthenticated(true)
+        setUser(data.user)
+        return { success: true }
       }
-      localStorage.setItem('portfolio_auth', JSON.stringify(authData))
-      setIsAuthenticated(true)
-      setUser({ email })
-      return true
+      
+      return { success: false, error: data.error || 'Login failed' }
+    } catch {
+      return { success: false, error: 'Network error' }
     }
-    return false
   }
 
-  const logout = () => {
-    localStorage.removeItem('portfolio_auth')
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch {
+      // Logout request failed, but clear local state anyway
+    }
     setIsAuthenticated(false)
     setUser(null)
   }

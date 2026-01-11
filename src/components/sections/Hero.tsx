@@ -165,14 +165,17 @@ export default function Hero() {
                 aria-hidden="true" 
               />
             </Link>
-            <a
-              href="/cv/emmanuel-inambao-cv.pdf"
-              download
-              className="btn-secondary group"
-            >
-              <Download className="w-4 h-4" aria-hidden="true" />
-              Download CV
-            </a>
+            {profile.cv && (
+              <a
+                href={profile.cv}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary group"
+              >
+                <Download className="w-4 h-4" aria-hidden="true" />
+                Download CV
+              </a>
+            )}
             <Link href="#contact" className="btn-accent">
               <Mail className="w-4 h-4" aria-hidden="true" />
               Contact Me

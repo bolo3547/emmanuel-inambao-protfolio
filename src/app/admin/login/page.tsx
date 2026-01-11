@@ -16,12 +16,12 @@ export default function AdminLoginPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const success = await login(email, password)
+    const result = await login(email, password)
     setLoading(false)
-    if (success) {
+    if (result.success) {
       router.push('/admin/dashboard')
     } else {
-      setError('Invalid credentials')
+      setError(result.error || 'Invalid credentials')
     }
   }
 

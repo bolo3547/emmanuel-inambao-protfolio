@@ -11,6 +11,7 @@ export interface Profile {
   email: string
   phone: string
   image: string
+  cv?: string
   status: string
   socialLinks: {
     github?: string
@@ -29,6 +30,7 @@ const defaultProfile: Profile = {
   email: 'denuelinambao@gmail.com',
   phone: '+260 XXX XXX XXX',
   image: '/images/profile/profile.jpg',
+  cv: '',
   status: 'Available for Engineering Projects',
   socialLinks: {
     github: 'https://github.com/einambao',

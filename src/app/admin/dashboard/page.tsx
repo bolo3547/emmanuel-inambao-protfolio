@@ -415,7 +415,9 @@ interface ProfileEditorProps {
 function ProfileEditor({ profile, onSave }: ProfileEditorProps) {
   const [formData, setFormData] = useState<Profile>(profile)
   const [uploading, setUploading] = useState(false)
+  const [uploadingCV, setUploadingCV] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const cvInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setFormData(profile)
@@ -446,6 +448,34 @@ function ProfileEditor({ profile, onSave }: ProfileEditorProps) {
       alert('Upload failed')
     } finally {
       setUploading(false)
+    }
+  }
+
+  const handleCVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingCV(true)
+    const form = new FormData()
+    form.append('file', file)
+    form.append('type', 'cv')
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: form,
+      })
+      const data = await res.json()
+      if (data.success) {
+        setFormData({ ...formData, cv: data.url })
+      } else {
+        alert(data.error || 'CV upload failed')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('CV upload failed')
+    } finally {
+      setUploadingCV(false)
     }
   }
 
@@ -566,6 +596,73 @@ function ProfileEditor({ profile, onSave }: ProfileEditorProps) {
                 className="w-full px-4 py-3 bg-dark-900 border border-dark-700 rounded-lg text-white placeholder-dark-500 focus:outline-none focus:border-primary-500 transition-colors resize-none"
                 placeholder="Tell people about yourself..."
               />
+            </div>
+          </div>
+        </div>
+
+        {/* CV Upload Section */}
+        <div className="bg-dark-800/50 border border-dark-700 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-white mb-4">CV / Resume</h2>
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            <div className="flex-1">
+              <p className="text-dark-300 mb-4">Upload your CV or resume to make it available for download on your portfolio.</p>
+              
+              {formData.cv && (
+                <div className="mb-4 p-4 bg-dark-900 rounded-lg border border-dark-600">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary-600/20 rounded-lg flex items-center justify-center">
+                        <Upload className="w-5 h-5 text-primary-500" />
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">CV Uploaded</p>
+                        <a 
+                          href={formData.cv} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-primary-400 text-sm hover:underline"
+                        >
+                          View CV →
+                        </a>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, cv: '' })}
+                      className="text-red-400 hover:text-red-300 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => cvInputRef.current?.click()}
+                disabled={uploadingCV}
+                className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 text-white rounded-lg transition-colors"
+              >
+                {uploadingCV ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5" />
+                    {formData.cv ? 'Replace CV' : 'Upload CV'}
+                  </>
+                )}
+              </button>
+              <input
+                ref={cvInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleCVUpload}
+                className="hidden"
+              />
+              <p className="text-dark-500 text-sm mt-2">Accepted formats: PDF, DOC, DOCX (max 10MB)</p>
             </div>
           </div>
         </div>
