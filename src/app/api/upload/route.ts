@@ -86,10 +86,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Configure Cloudinary (inside the handler to ensure env vars are loaded)
+    // Trim values to remove any whitespace/newlines from env vars
     cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME?.trim(),
+      api_key: process.env.CLOUDINARY_API_KEY?.trim(),
+      api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
     })
 
     let formData: FormData
@@ -244,9 +245,18 @@ export async function POST(request: NextRequest) {
         publicId: uploadResult.public_id,
         fileName: file.name,
       })
-    } catch (cloudinaryError) {
+    } catch (cloudinaryError: unknown) {
       console.error('Cloudinary upload error:', cloudinaryError)
-      const errorMessage = cloudinaryError instanceof Error ? cloudinaryError.message : 'Unknown Cloudinary error'
+      
+      // Extract detailed error message from Cloudinary
+      let errorMessage = 'Unknown Cloudinary error'
+      if (cloudinaryError instanceof Error) {
+        errorMessage = cloudinaryError.message
+      } else if (typeof cloudinaryError === 'object' && cloudinaryError !== null) {
+        const err = cloudinaryError as { message?: string; error?: { message?: string } }
+        errorMessage = err.message || err.error?.message || JSON.stringify(cloudinaryError)
+      }
+      
       return NextResponse.json(
         { error: `Upload to cloud storage failed: ${errorMessage}` },
         { status: 500 }
