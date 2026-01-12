@@ -4,8 +4,9 @@
 export const AUTH_CONFIG = {
   // In production, use proper auth like NextAuth.js with a database
   // These are read from server-only environment variables
-  adminEmail: process.env.ADMIN_EMAIL || 'denuelinambao@gmail.com',
-  adminPassword: process.env.ADMIN_PASSWORD || 'admin123', // Change this!
+  // Trim to remove any accidental whitespace/newlines from env vars
+  adminEmail: (process.env.ADMIN_EMAIL || 'denuelinambao@gmail.com').trim(),
+  adminPassword: (process.env.ADMIN_PASSWORD || 'admin123').trim(),
   
   // Session settings
   sessionDuration: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
