@@ -529,6 +529,7 @@ function ProfileEditor({ profile, onSave }: ProfileEditorProps) {
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: form,
+        credentials: 'include', // Ensure cookies are sent
       })
       const data = await res.json()
       if (data.success) {
@@ -537,8 +538,8 @@ function ProfileEditor({ profile, onSave }: ProfileEditorProps) {
         alert(data.error || 'Upload failed')
       }
     } catch (err) {
-      console.error(err)
-      alert('Upload failed')
+      console.error('Image upload error:', err)
+      alert('Upload failed. Check console for details.')
     } finally {
       setUploading(false)
     }
@@ -557,6 +558,7 @@ function ProfileEditor({ profile, onSave }: ProfileEditorProps) {
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: form,
+        credentials: 'include', // Ensure cookies are sent
       })
       const data = await res.json()
       if (data.success) {
@@ -565,8 +567,8 @@ function ProfileEditor({ profile, onSave }: ProfileEditorProps) {
         alert(data.error || 'CV upload failed')
       }
     } catch (err) {
-      console.error(err)
-      alert('CV upload failed')
+      console.error('CV upload error:', err)
+      alert('CV upload failed. Check console for details.')
     } finally {
       setUploadingCV(false)
     }
@@ -884,6 +886,7 @@ function ProjectModal({ project, isNew, onSave, onClose }: ProjectModalProps) {
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: form,
+        credentials: 'include',
       })
       const data = await res.json()
       if (data.success) {
@@ -892,8 +895,8 @@ function ProjectModal({ project, isNew, onSave, onClose }: ProjectModalProps) {
         alert(data.error || 'Upload failed')
       }
     } catch (err) {
-      console.error(err)
-      alert('Upload failed')
+      console.error('Project image upload error:', err)
+      alert('Upload failed. Check console for details.')
     } finally {
       setUploading(false)
     }

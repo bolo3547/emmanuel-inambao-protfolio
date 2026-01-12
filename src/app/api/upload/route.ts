@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
-import { isAuthenticated } from '@/lib/auth-helpers'
+import { cookies } from 'next/headers'
+import { AUTH_CONFIG } from '@/lib/auth-config'
 
 // Simple rate limiting for uploads
 const uploadAttempts = new Map<string, { count: number; resetTime: number }>()
@@ -29,17 +30,36 @@ function checkRateLimit(ip: string): boolean {
   return true
 }
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-})
+// Check authentication directly in this route
+async function checkAuth(): Promise<boolean> {
+  try {
+    const cookieStore = await cookies()
+    const sessionCookie = cookieStore.get(AUTH_CONFIG.cookieName)
+
+    if (!sessionCookie) {
+      console.log('Upload auth: No session cookie found')
+      return false
+    }
+
+    const sessionData = JSON.parse(
+      Buffer.from(sessionCookie.value, 'base64').toString()
+    )
+
+    const isValid = sessionData.exp > Date.now()
+    if (!isValid) {
+      console.log('Upload auth: Session expired')
+    }
+    return isValid
+  } catch (error) {
+    console.error('Upload auth error:', error)
+    return false
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const authenticated = await isAuthenticated()
+    const authenticated = await checkAuth()
     if (!authenticated) {
       return NextResponse.json(
         { error: 'Unauthorized. Please log in.' },
@@ -58,19 +78,42 @@ export async function POST(request: NextRequest) {
 
     // Check if Cloudinary is configured
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      console.error('Cloudinary not configured. Missing environment variables.')
       return NextResponse.json(
-        { error: 'Cloudinary not configured. Please set environment variables.' },
+        { error: 'Cloudinary not configured. Please set environment variables in .env.local' },
         { status: 500 }
       )
     }
 
-    const formData = await request.formData()
-    const file = formData.get('file') as File
+    // Configure Cloudinary (inside the handler to ensure env vars are loaded)
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    })
+
+    let formData: FormData
+    try {
+      formData = await request.formData()
+    } catch (error) {
+      console.error('FormData parse error:', error)
+      return NextResponse.json(
+        { error: 'Invalid form data' },
+        { status: 400 }
+      )
+    }
+
+    const file = formData.get('file') as File | null
     const type = formData.get('type') as string // 'profile', 'project', or 'cv'
     const projectId = formData.get('projectId') as string | null
 
-    if (!file) {
+    if (!file || !(file instanceof File)) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+    }
+
+    // Check file size (basic check before processing)
+    if (file.size === 0) {
+      return NextResponse.json({ error: 'File is empty' }, { status: 400 })
     }
 
     // Validate file type based on upload type
@@ -192,18 +235,28 @@ export async function POST(request: NextRequest) {
       ]
     }
 
-    const uploadResult = await cloudinary.uploader.upload(dataURI, uploadOptions)
+    try {
+      const uploadResult = await cloudinary.uploader.upload(dataURI, uploadOptions)
 
-    return NextResponse.json({
-      success: true,
-      url: uploadResult.secure_url,
-      publicId: uploadResult.public_id,
-      fileName: file.name,
-    })
+      return NextResponse.json({
+        success: true,
+        url: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+        fileName: file.name,
+      })
+    } catch (cloudinaryError) {
+      console.error('Cloudinary upload error:', cloudinaryError)
+      const errorMessage = cloudinaryError instanceof Error ? cloudinaryError.message : 'Unknown Cloudinary error'
+      return NextResponse.json(
+        { error: `Upload to cloud storage failed: ${errorMessage}` },
+        { status: 500 }
+      )
+    }
   } catch (error) {
     console.error('Upload error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: `Failed to upload file: ${errorMessage}` },
       { status: 500 }
     )
   }

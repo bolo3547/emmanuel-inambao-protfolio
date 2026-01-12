@@ -189,13 +189,16 @@ function ExperienceModal({
     formData.append('file', file)
     formData.append('type', 'experience')
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const res = await fetch('/api/upload', { method: 'POST', body: formData, credentials: 'include' })
       const data = await res.json()
       if (data.success) {
         setForm({ ...form, logo: data.url })
+      } else {
+        alert(data.error || 'Upload failed')
       }
     } catch (err) {
-      console.error(err)
+      console.error('Upload error:', err)
+      alert('Upload failed')
     } finally {
       setUploading(false)
     }

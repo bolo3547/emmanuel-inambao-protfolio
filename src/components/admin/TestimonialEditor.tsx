@@ -188,10 +188,11 @@ function TestimonialModal({
     formData.append('file', file)
     formData.append('type', 'testimonial')
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const res = await fetch('/api/upload', { method: 'POST', body: formData, credentials: 'include' })
       const data = await res.json()
       if (data.success) setForm({ ...form, image: data.url })
-    } catch (err) { console.error(err) }
+      else alert(data.error || 'Image upload failed')
+    } catch (err) { console.error('Image upload error:', err); alert('Image upload failed') }
     finally { setUploadingImage(false) }
   }
 
@@ -203,12 +204,12 @@ function TestimonialModal({
     formData.append('file', file)
     formData.append('type', 'testimonial-video')
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const res = await fetch('/api/upload', { method: 'POST', body: formData, credentials: 'include' })
       const data = await res.json()
       if (data.success) setForm({ ...form, video: data.url })
       else alert(data.error || 'Video upload failed')
     } catch (err) { 
-      console.error(err)
+      console.error('Video upload error:', err)
       alert('Video upload failed')
     }
     finally { setUploadingVideo(false) }
