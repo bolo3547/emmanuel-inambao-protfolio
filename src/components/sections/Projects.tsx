@@ -39,7 +39,7 @@ export default function Projects() {
         </motion.div>
 
         {/* Projects list */}
-        <div className="space-y-20 lg:space-y-32">
+        <div className="space-y-16 sm:space-y-20 lg:space-y-32">
           {projects.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}

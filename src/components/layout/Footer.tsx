@@ -98,11 +98,11 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-dark-800">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-dark-500 text-sm text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <p className="text-dark-500 text-sm">
               © {currentYear} Prof. Emmanuel Inambao. Engineering Excellence.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               <Link 
                 href="/admin" 
                 className="text-dark-600 hover:text-dark-400 text-sm transition-colors"

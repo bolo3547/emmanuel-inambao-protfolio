@@ -106,18 +106,18 @@ export default function About() {
               </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-6 border-t border-dark-700">
-                <div>
-                  <p className="text-3xl font-bold text-white">15+</p>
-                  <p className="text-dark-500 text-sm">Projects Delivered</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 pt-6 border-t border-dark-700">
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-white">15+</p>
+                  <p className="text-dark-500 text-xs sm:text-sm">Projects Delivered</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-white">50+</p>
-                  <p className="text-dark-500 text-sm">Students Mentored</p>
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-white">50+</p>
+                  <p className="text-dark-500 text-xs sm:text-sm">Students Mentored</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-white">5+</p>
-                  <p className="text-dark-500 text-sm">Years Experience</p>
+                <div className="col-span-2 sm:col-span-1 text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-white">5+</p>
+                  <p className="text-dark-500 text-xs sm:text-sm">Years Experience</p>
                 </div>
               </div>
             </motion.div>

@@ -138,15 +138,15 @@ export default function Testimonials() {
             <>
               <button
                 onClick={prevTestimonial}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-6 w-12 h-12 rounded-full bg-dark-800 border border-dark-700 flex items-center justify-center text-white hover:bg-dark-700 transition-colors"
+                className="absolute left-2 sm:left-0 top-1/2 -translate-y-1/2 sm:-translate-x-6 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-dark-800 border border-dark-700 flex items-center justify-center text-white hover:bg-dark-700 transition-colors z-10"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
               <button
                 onClick={nextTestimonial}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-6 w-12 h-12 rounded-full bg-dark-800 border border-dark-700 flex items-center justify-center text-white hover:bg-dark-700 transition-colors"
+                className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 sm:translate-x-6 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-dark-800 border border-dark-700 flex items-center justify-center text-white hover:bg-dark-700 transition-colors z-10"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </>
           )}

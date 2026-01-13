@@ -196,7 +196,7 @@ export default function Skills() {
           <h3 className="text-lg font-semibold text-white mb-6">
             Tools & Platforms I Work With
           </h3>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
             {[
               'Arduino IDE',
               'VS Code',
