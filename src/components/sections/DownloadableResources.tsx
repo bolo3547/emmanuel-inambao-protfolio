@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Resource {
   id: string
@@ -14,7 +14,9 @@ interface Resource {
   icon: string
 }
 
-const resources: Resource[] = [
+const STORAGE_KEY = 'portfolio_resources'
+
+const defaultResources: Resource[] = [
   {
     id: '1',
     title: 'IoT Project Starter Guide',
@@ -45,36 +47,6 @@ const resources: Resource[] = [
     downloads: 2100,
     icon: '📦',
   },
-  {
-    id: '4',
-    title: 'Robotics Safety Standards',
-    description: 'Overview of industrial robotics safety standards and implementation guidelines.',
-    type: 'pdf',
-    fileUrl: '/resources/robotics-safety.pdf',
-    fileSize: '3.1 MB',
-    downloads: 670,
-    icon: '🤖',
-  },
-  {
-    id: '5',
-    title: 'Smart Home Architecture Guide',
-    description: 'Best practices for designing scalable smart home systems with multiple protocols.',
-    type: 'guide',
-    fileUrl: '/resources/smart-home-architecture.pdf',
-    fileSize: '1.8 MB',
-    downloads: 1540,
-    icon: '🏠',
-  },
-  {
-    id: '6',
-    title: 'Sensor Calibration Template',
-    description: 'Excel template for sensor calibration with automatic curve fitting and error analysis.',
-    type: 'template',
-    fileUrl: '/resources/sensor-calibration.xlsx',
-    fileSize: '450 KB',
-    downloads: 780,
-    icon: '📊',
-  },
 ]
 
 const typeColors = {
@@ -87,6 +59,21 @@ const typeColors = {
 export default function DownloadableResources() {
   const [filter, setFilter] = useState<'all' | Resource['type']>('all')
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const [resources, setResources] = useState<Resource[]>(defaultResources)
+
+  // Load resources from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        try {
+          setResources(JSON.parse(stored))
+        } catch (e) {
+          console.error('Failed to parse resources:', e)
+        }
+      }
+    }
+  }, [])
 
   const filteredResources = filter === 'all' 
     ? resources 

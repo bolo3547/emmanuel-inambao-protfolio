@@ -3,23 +3,36 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+// Storage key for audio URL
+const AUDIO_STORAGE_KEY = 'portfolio_audio_intro'
+
 export default function AudioIntroduction() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [hasError, setHasError] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string>('')
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  // Audio source - can be updated via admin panel
-  const audioSrc = '/audio/introduction.mp3'
+  // Load audio URL from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUrl = localStorage.getItem(AUDIO_STORAGE_KEY)
+      if (storedUrl) {
+        setAudioUrl(storedUrl)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || !audioUrl) return
 
     const handleLoadedMetadata = () => {
       setDuration(audio.duration)
       setIsLoaded(true)
+      setHasError(false)
     }
 
     const handleTimeUpdate = () => {
@@ -31,25 +44,42 @@ export default function AudioIntroduction() {
       setProgress(0)
     }
 
+    const handleError = () => {
+      setHasError(true)
+      setIsLoaded(false)
+    }
+
+    const handleCanPlay = () => {
+      setIsLoaded(true)
+      setHasError(false)
+    }
+
     audio.addEventListener('loadedmetadata', handleLoadedMetadata)
     audio.addEventListener('timeupdate', handleTimeUpdate)
     audio.addEventListener('ended', handleEnded)
+    audio.addEventListener('error', handleError)
+    audio.addEventListener('canplay', handleCanPlay)
 
     return () => {
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
       audio.removeEventListener('timeupdate', handleTimeUpdate)
       audio.removeEventListener('ended', handleEnded)
+      audio.removeEventListener('error', handleError)
+      audio.removeEventListener('canplay', handleCanPlay)
     }
-  }, [])
+  }, [audioUrl])
 
   const togglePlay = () => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || hasError || !audioUrl) return
 
     if (isPlaying) {
       audio.pause()
     } else {
-      audio.play()
+      audio.play().catch((err) => {
+        console.error('Audio playback error:', err)
+        setHasError(true)
+      })
     }
     setIsPlaying(!isPlaying)
   }
@@ -62,12 +92,17 @@ export default function AudioIntroduction() {
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio || hasError || !audioUrl) return
 
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
     const percentage = x / rect.width
     audio.currentTime = percentage * audio.duration
+  }
+
+  // Don't render if no audio is uploaded
+  if (!audioUrl) {
+    return null
   }
 
   return (
@@ -77,7 +112,7 @@ export default function AudioIntroduction() {
       viewport={{ once: true }}
       className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl max-w-md mx-auto"
     >
-      <audio ref={audioRef} src={audioSrc} preload="metadata" />
+      {audioUrl && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
 
       <div className="flex items-center gap-4">
         {/* Avatar with sound waves */}

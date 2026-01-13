@@ -7,7 +7,7 @@ import {
   Plus, Edit2, Trash2, LogOut, Save, X, Cpu, 
   FolderOpen, ExternalLink, Github, Image as ImageIcon,
   User, Upload, Camera, Check, AlertCircle, Briefcase,
-  Quote, Award, Settings, Video
+  Quote, Award, Settings, Video, FileText
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { useProjects, Project } from '@/lib/projects'
@@ -19,8 +19,9 @@ import TestimonialEditor from '@/components/admin/TestimonialEditor'
 import CertificationEditor from '@/components/admin/CertificationEditor'
 import ServiceEditor from '@/components/admin/ServiceEditor'
 import MediaUploader from '@/components/admin/MediaUploader'
+import ResourcesEditor from '@/components/admin/ResourcesEditor'
 
-type TabType = 'projects' | 'profile' | 'experience' | 'testimonials' | 'certifications' | 'services' | 'media'
+type TabType = 'projects' | 'profile' | 'experience' | 'testimonials' | 'certifications' | 'services' | 'media' | 'resources'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -230,6 +231,17 @@ export default function AdminDashboard() {
             >
               <Video className="w-5 h-5" />
               Media
+            </button>
+            <button
+              onClick={() => setActiveTab('resources')}
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === 'resources'
+                  ? 'text-primary-400 border-primary-500'
+                  : 'text-dark-400 border-transparent hover:text-white'
+              }`}
+            >
+              <FileText className="w-5 h-5" />
+              Resources
             </button>
           </div>
         </div>
@@ -489,6 +501,15 @@ export default function AdminDashboard() {
               <MediaUploader 
                 onNotify={(type, message) => setNotification({ type, message })}
               />
+            </motion.div>
+          ) : activeTab === 'resources' ? (
+            <motion.div
+              key="resources"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <ResourcesEditor />
             </motion.div>
           ) : null}
         </AnimatePresence>
