@@ -126,7 +126,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           {project.githubUrl && (
             <a
               href={project.githubUrl}
@@ -152,7 +152,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             </a>
           )}
           <button 
-            className="inline-flex items-center gap-1 text-dark-500 hover:text-dark-300 transition-colors ml-auto"
+            className="inline-flex items-center gap-1 text-dark-500 hover:text-dark-300 transition-colors sm:ml-auto"
             aria-label={`Read more about ${project.title}`}
           >
             <span className="text-sm">Details</span>

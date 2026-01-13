@@ -111,7 +111,7 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       onClick={handleLinkClick}
-                      className="block py-3 px-4 text-dark-300 light:text-slate-600 hover:text-white light:hover:text-slate-900 hover:bg-dark-800/50 light:hover:bg-slate-100 
+                      className="block py-3 px-4 text-center text-dark-300 light:text-slate-600 hover:text-white light:hover:text-slate-900 hover:bg-dark-800/50 light:hover:bg-slate-100 
                                  rounded-lg transition-all duration-200 font-medium"
                     >
                       {link.label}

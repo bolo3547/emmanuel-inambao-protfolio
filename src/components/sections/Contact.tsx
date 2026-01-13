@@ -193,7 +193,7 @@ export default function Contact() {
               <h3 className="text-xl font-bold text-white mb-4">
                 Connect Online
               </h3>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 {socialLinks.map((social) => {
                   const Icon = social.icon
                   return (

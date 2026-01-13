@@ -54,7 +54,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-[80vh] md:min-h-screen flex items-center justify-center overflow-hidden"
       aria-label="Introduction"
     >
       {/* Background gradient effects */}
@@ -107,9 +107,9 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="lg:absolute lg:top-24 lg:right-8 xl:right-16 2xl:right-24 mb-8 lg:mb-0 flex justify-center lg:justify-end"
+            className="lg:absolute lg:top-24 lg:right-8 xl:right-16 2xl:right-24 mb-6 lg:mb-0 flex justify-center lg:justify-end"
           >
-            <div className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56 rounded-full overflow-hidden border-4 border-primary-500/30 shadow-2xl shadow-primary-500/20 ring-4 ring-dark-800/50">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 xl:w-56 xl:h-56 rounded-full overflow-hidden border-4 border-primary-500/30 shadow-2xl shadow-primary-500/20 ring-4 ring-dark-800/50">
               <Image
                 src={profile.image}
                 alt={profile.name}
