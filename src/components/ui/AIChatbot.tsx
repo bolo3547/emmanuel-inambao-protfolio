@@ -98,27 +98,23 @@ export default function AIChatbot() {
     scrollToBottom()
   }, [messages])
 
-  const handleSend = async () => {
-    if (!input.trim()) return
+  const handleSend = () => {
+    if (!input.trim() || isTyping) return
 
     const userMessage = input.trim()
     setInput('')
+    
+    // Add user message immediately
     setMessages((prev) => [...prev, { role: 'user', content: userMessage }])
     setIsTyping(true)
 
-    // Simulate AI thinking delay
-    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1000))
-
-    const response = generateResponse(userMessage)
-    setIsTyping(false)
-    setMessages((prev) => [...prev, { role: 'assistant', content: response }])
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
+    // Simulate AI thinking delay and then respond
+    const delay = 800 + Math.random() * 700
+    setTimeout(() => {
+      const response = generateResponse(userMessage)
+      setMessages((prev) => [...prev, { role: 'assistant', content: response }])
+      setIsTyping(false)
+    }, delay)
   }
 
   return (
@@ -238,17 +234,23 @@ export default function AIChatbot() {
 
             {/* Input */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex gap-2">
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  handleSend()
+                }}
+                className="flex gap-2"
+              >
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyPress}
                   placeholder="Ask about skills, projects..."
                   className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
+                  disabled={isTyping}
                 />
                 <motion.button
-                  onClick={handleSend}
+                  type="submit"
                   disabled={!input.trim() || isTyping}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -258,7 +260,7 @@ export default function AIChatbot() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
                 </motion.button>
-              </div>
+              </form>
             </div>
           </motion.div>
         )}
