@@ -69,7 +69,8 @@ export default function GalleryEditor() {
       })
 
       if (!response.ok) {
-        throw new Error('Upload failed')
+        const data = await response.json()
+        throw new Error(data.error || 'Upload failed')
       }
 
       const data = await response.json()
@@ -83,7 +84,7 @@ export default function GalleryEditor() {
       showNotification('success', 'File uploaded successfully!')
     } catch (error) {
       console.error('Upload error:', error)
-      showNotification('error', 'Failed to upload file. Please try again.')
+      showNotification('error', error instanceof Error ? error.message : 'Failed to upload file. Please try again.')
     } finally {
       setUploading(false)
     }

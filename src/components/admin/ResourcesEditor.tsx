@@ -61,6 +61,7 @@ export default function ResourcesEditor() {
 
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('type', 'audio')
 
     try {
       const response = await fetch('/api/upload', {
@@ -69,7 +70,8 @@ export default function ResourcesEditor() {
       })
 
       if (!response.ok) {
-        throw new Error('Upload failed')
+        const data = await response.json()
+        throw new Error(data.error || 'Upload failed')
       }
 
       const data = await response.json()
@@ -77,7 +79,7 @@ export default function ResourcesEditor() {
       showNotification('success', 'Audio introduction uploaded successfully!')
     } catch (error) {
       console.error('Upload error:', error)
-      showNotification('error', 'Failed to upload audio. Please try again.')
+      showNotification('error', error instanceof Error ? error.message : 'Failed to upload audio. Please try again.')
     } finally {
       setUploadingAudio(false)
     }
@@ -98,6 +100,7 @@ export default function ResourcesEditor() {
 
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('type', 'resource')
 
     try {
       const response = await fetch('/api/upload', {
@@ -106,7 +109,8 @@ export default function ResourcesEditor() {
       })
 
       if (!response.ok) {
-        throw new Error('Upload failed')
+        const data = await response.json()
+        throw new Error(data.error || 'Upload failed')
       }
 
       const data = await response.json()
@@ -126,7 +130,7 @@ export default function ResourcesEditor() {
       showNotification('success', 'File uploaded successfully!')
     } catch (error) {
       console.error('Upload error:', error)
-      showNotification('error', 'Failed to upload file. Please try again.')
+      showNotification('error', error instanceof Error ? error.message : 'Failed to upload file. Please try again.')
     } finally {
       setUploadingResource(false)
     }

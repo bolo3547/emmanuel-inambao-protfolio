@@ -54,12 +54,14 @@ export default function MediaUploader({ onNotify }: Props) {
     const formData = new FormData()
     formData.append('file', file)
     
-    // Determine upload type
+    // Determine upload type based on file
     let uploadType = 'image'
     if (file.type.startsWith('video/')) {
       uploadType = 'video'
-    } else if (file.type.includes('pdf') || file.type.includes('document')) {
-      uploadType = 'cv'
+    } else if (file.type.startsWith('audio/')) {
+      uploadType = 'audio'
+    } else if (file.type.includes('pdf') || file.type.includes('document') || file.type.includes('spreadsheet') || file.type.includes('presentation') || file.type.includes('zip')) {
+      uploadType = 'resource'
     }
     formData.append('type', uploadType)
 
