@@ -1,123 +1,141 @@
 'use client'
 
 import { motion, useInView, AnimatePresence } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { 
   Image as ImageIcon, 
-  Monitor, 
-  Cpu, 
-  GitBranch,
   X,
-  ZoomIn
+  ZoomIn,
+  Play,
+  Star
 } from 'lucide-react'
+import Image from 'next/image'
+
+interface GalleryItem {
+  id: string
+  title: string
+  description: string
+  url: string
+  type: 'image' | 'video'
+  category: 'project' | 'workshop' | 'event' | 'prototype' | 'other'
+  featured: boolean
+  createdAt: string
+}
+
+const STORAGE_KEY = 'portfolio_gallery'
+
+// Default items shown when no uploads exist
+const defaultItems: GalleryItem[] = [
+  {
+    id: '1',
+    title: 'Smart Agriculture System',
+    description: 'IoT sensors monitoring soil moisture and plant health in real-time',
+    url: 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=800',
+    type: 'image',
+    category: 'project',
+    featured: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    title: 'Industrial Robot Arm',
+    description: 'Custom-built 6-axis robotic arm for precision manufacturing',
+    url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800',
+    type: 'image',
+    category: 'prototype',
+    featured: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: '3',
+    title: 'PCB Design Workshop',
+    description: 'Teaching students advanced PCB design techniques',
+    url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800',
+    type: 'image',
+    category: 'workshop',
+    featured: false,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: '4',
+    title: 'Drone Navigation System',
+    description: 'Autonomous drone with AI-powered obstacle avoidance',
+    url: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800',
+    type: 'image',
+    category: 'project',
+    featured: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: '5',
+    title: 'ESP32 Development Board',
+    description: 'Custom ESP32 board for IoT applications',
+    url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
+    type: 'image',
+    category: 'prototype',
+    featured: false,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: '6',
+    title: 'Tech Conference Speaker',
+    description: 'Presenting on IoT innovations at TechSummit 2025',
+    url: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800',
+    type: 'image',
+    category: 'event',
+    featured: false,
+    createdAt: new Date().toISOString(),
+  },
+]
 
 // Gallery categories
 const categories = [
   { id: 'all', label: 'All' },
-  { id: 'hardware', label: 'Hardware Builds' },
-  { id: 'dashboards', label: 'Dashboards' },
-  { id: 'diagrams', label: 'Diagrams' },
+  { id: 'project', label: 'Projects' },
+  { id: 'prototype', label: 'Prototypes' },
+  { id: 'workshop', label: 'Workshops' },
+  { id: 'event', label: 'Events' },
 ]
 
-// Gallery items data
-const galleryItems = [
-  {
-    id: 1,
-    category: 'hardware',
-    title: 'ESP32 Control Board Assembly',
-    description: 'Custom PCB with ESP32, relay modules, and power regulation for irrigation system',
-  },
-  {
-    id: 2,
-    category: 'hardware',
-    title: 'Ultrasonic Sensor Array',
-    description: 'Dual HC-SR04 setup for bottle height detection in sorting system',
-  },
-  {
-    id: 3,
-    category: 'dashboards',
-    title: 'Oil Level Monitoring Dashboard',
-    description: 'Real-time tank level visualization with trend analysis and alerts',
-  },
-  {
-    id: 4,
-    category: 'hardware',
-    title: 'Motor Driver Integration',
-    description: 'L298N driver connected to cutter robot motors with PWM control',
-  },
-  {
-    id: 5,
-    category: 'diagrams',
-    title: 'Smart Irrigation System Architecture',
-    description: 'Complete system block diagram showing sensor-to-cloud data flow',
-  },
-  {
-    id: 6,
-    category: 'dashboards',
-    title: 'Irrigation Control Panel',
-    description: 'Web-based control interface for remote pump management',
-  },
-  {
-    id: 7,
-    category: 'hardware',
-    title: 'Smart Walking Stick Prototype',
-    description: 'Compact design with ultrasonic sensor and vibration feedback',
-  },
-  {
-    id: 8,
-    category: 'diagrams',
-    title: 'Cutter Robot Wiring Diagram',
-    description: 'Detailed electrical connections for motor and sensor integration',
-  },
-  {
-    id: 9,
-    category: 'dashboards',
-    title: 'Bottle Sorting Statistics',
-    description: 'Production dashboard showing sorting counts and efficiency metrics',
-  },
-  {
-    id: 10,
-    category: 'hardware',
-    title: 'Conveyor Belt Mechanism',
-    description: 'Automated bottle transport system with speed control',
-  },
-  {
-    id: 11,
-    category: 'diagrams',
-    title: 'Oil Monitor Data Flow',
-    description: 'MQTT-based architecture diagram for industrial monitoring',
-  },
-  {
-    id: 12,
-    category: 'hardware',
-    title: 'Solar Power Integration',
-    description: 'Off-grid power system for remote irrigation controller',
-  },
-]
-
-// Helper function to get category icon
-function getCategoryIcon(category: string) {
-  switch (category) {
-    case 'hardware':
-      return Cpu
-    case 'dashboards':
-      return Monitor
-    case 'diagrams':
-      return GitBranch
-    default:
-      return ImageIcon
-  }
+const categoryColors: Record<string, string> = {
+  project: 'bg-blue-600',
+  prototype: 'bg-orange-600',
+  workshop: 'bg-green-600',
+  event: 'bg-purple-600',
+  other: 'bg-gray-600',
 }
 
 export default function Gallery() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [activeCategory, setActiveCategory] = useState('all')
-  const [selectedItem, setSelectedItem] = useState<typeof galleryItems[0] | null>(null)
+  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null)
+  const [items, setItems] = useState<GalleryItem[]>(defaultItems)
+
+  // Load items from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        try {
+          setItems(JSON.parse(stored))
+        } catch (e) {
+          console.error('Failed to parse gallery:', e)
+        }
+      }
+    }
+  }, [])
 
   const filteredItems = activeCategory === 'all'
-    ? galleryItems
-    : galleryItems.filter((item) => item.category === activeCategory)
+    ? items
+    : items.filter((item) => item.category === activeCategory)
+
+  // Sort to show featured items first
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (a.featured && !b.featured) return -1
+    if (!a.featured && b.featured) return 1
+    return 0
+  })
 
   return (
     <section
@@ -138,12 +156,12 @@ export default function Gallery() {
             Gallery
           </span>
           <h2 id="gallery-heading" className="section-heading mt-2">
-            Engineering{' '}
-            <span className="gradient-text">Portfolio</span>
+            My Work in{' '}
+            <span className="gradient-text">Action</span>
           </h2>
           <p className="section-subheading mx-auto mt-4">
-            Visual documentation of hardware builds, dashboards, and system architectures 
-            from real-world projects.
+            Photos and videos from projects, workshops, and events - 
+            showcasing engineering in the real world.
           </p>
         </motion.div>
 
@@ -175,62 +193,77 @@ export default function Gallery() {
 
         {/* Gallery grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredItems.map((item, index) => {
-            const Icon = getCategoryIcon(item.category)
-            return (
-              <motion.button
-                key={item.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                onClick={() => setSelectedItem(item)}
-                className="group relative aspect-square bg-dark-800 border border-dark-700 rounded-xl overflow-hidden hover:border-primary-500/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                aria-label={`View ${item.title}`}
-              >
-                {/* Placeholder background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-dark-700 via-dark-800 to-dark-900" />
+          {sortedItems.map((item, index) => (
+            <motion.button
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              onClick={() => setSelectedItem(item)}
+              className="group relative aspect-square bg-dark-800 border border-dark-700 rounded-xl overflow-hidden hover:border-primary-500/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              aria-label={`View ${item.title}`}
+            >
+              {/* Media */}
+              {item.type === 'video' ? (
+                <video
+                  src={item.url}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  muted
+                />
+              ) : (
+                <Image
+                  src={item.url}
+                  alt={item.title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                />
+              )}
 
-                {/* Center icon */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="p-4 rounded-full bg-dark-700/50 group-hover:bg-primary-600/20 transition-colors">
-                    <Icon className="w-8 h-8 text-dark-400 group-hover:text-primary-400 transition-colors" />
-                  </div>
+              {/* Video indicator */}
+              {item.type === 'video' && (
+                <div className="absolute top-3 left-3 p-2 bg-dark-900/80 rounded-full">
+                  <Play className="w-4 h-4 text-white" fill="white" />
                 </div>
+              )}
 
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="text-white font-medium text-sm truncate">{item.title}</p>
-                    <p className="text-dark-400 text-xs mt-1 truncate">{item.description}</p>
-                  </div>
+              {/* Featured badge */}
+              {item.featured && (
+                <div className="absolute top-3 right-3 p-1.5 bg-yellow-500 rounded-full">
+                  <Star className="w-3 h-3 text-yellow-900" fill="currentColor" />
                 </div>
+              )}
 
-                {/* Zoom icon */}
-                <div className="absolute top-3 right-3 p-2 bg-dark-900/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ZoomIn className="w-4 h-4 text-white" />
+              {/* Category badge */}
+              <div className={`absolute bottom-3 left-3 px-2 py-0.5 rounded text-xs text-white ${categoryColors[item.category] || categoryColors.other}`}>
+                {item.category}
+              </div>
+
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="text-white font-medium text-sm truncate">{item.title}</p>
+                  <p className="text-dark-400 text-xs mt-1 truncate">{item.description}</p>
                 </div>
-              </motion.button>
-            )
-          })}
+              </div>
+
+              {/* Zoom icon on hover */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="p-3 bg-dark-900/80 rounded-full">
+                  <ZoomIn className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </motion.button>
+          ))}
         </div>
 
         {/* Empty state */}
-        {filteredItems.length === 0 && (
+        {sortedItems.length === 0 && (
           <div className="text-center py-12">
             <ImageIcon className="w-12 h-12 text-dark-600 mx-auto mb-4" />
             <p className="text-dark-400">No items found in this category.</p>
           </div>
         )}
-
-        {/* Note about placeholders */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center text-dark-500 text-sm mt-8"
-        >
-          💡 Replace placeholder images with actual project photos to showcase your work.
-        </motion.p>
       </div>
 
       {/* Lightbox Modal */}
@@ -259,29 +292,40 @@ export default function Gallery() {
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Image placeholder */}
-              <div className="aspect-video bg-dark-900 flex items-center justify-center">
-                <div className="text-center p-8">
-                  {(() => {
-                    const Icon = getCategoryIcon(selectedItem.category)
-                    return (
-                      <div className="p-6 rounded-full bg-dark-800 inline-block mb-4">
-                        <Icon className="w-12 h-12 text-primary-400" />
-                      </div>
-                    )
-                  })()}
-                  <p className="text-dark-500">Image Placeholder</p>
-                  <p className="text-dark-600 text-sm mt-1">{selectedItem.category.toUpperCase()}</p>
-                </div>
+              {/* Media */}
+              <div className="aspect-video bg-dark-900 relative">
+                {selectedItem.type === 'video' ? (
+                  <video
+                    src={selectedItem.url}
+                    className="w-full h-full object-contain"
+                    controls
+                    autoPlay
+                  />
+                ) : (
+                  <Image
+                    src={selectedItem.url}
+                    alt={selectedItem.title}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 1200px) 100vw, 1200px"
+                  />
+                )}
               </div>
 
               {/* Content */}
               <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`px-2 py-0.5 rounded text-xs text-white ${categoryColors[selectedItem.category] || categoryColors.other}`}>
+                    {selectedItem.category}
+                  </span>
+                  {selectedItem.featured && (
+                    <span className="px-2 py-0.5 rounded text-xs bg-yellow-500 text-yellow-900 flex items-center gap-1">
+                      <Star className="w-3 h-3" fill="currentColor" /> Featured
+                    </span>
+                  )}
+                </div>
                 <h3 className="text-xl font-bold text-white mb-2">{selectedItem.title}</h3>
                 <p className="text-dark-400">{selectedItem.description}</p>
-                <div className="mt-4">
-                  <span className="tech-badge">{selectedItem.category}</span>
-                </div>
               </div>
             </motion.div>
           </motion.div>

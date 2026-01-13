@@ -7,7 +7,7 @@ import {
   Plus, Edit2, Trash2, LogOut, Save, X, Cpu, 
   FolderOpen, ExternalLink, Github, Image as ImageIcon,
   User, Upload, Camera, Check, AlertCircle, Briefcase,
-  Quote, Award, Settings, Video, FileText
+  Quote, Award, Settings, Video, FileText, GalleryHorizontal
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { useProjects, Project } from '@/lib/projects'
@@ -20,8 +20,9 @@ import CertificationEditor from '@/components/admin/CertificationEditor'
 import ServiceEditor from '@/components/admin/ServiceEditor'
 import MediaUploader from '@/components/admin/MediaUploader'
 import ResourcesEditor from '@/components/admin/ResourcesEditor'
+import GalleryEditor from '@/components/admin/GalleryEditor'
 
-type TabType = 'projects' | 'profile' | 'experience' | 'testimonials' | 'certifications' | 'services' | 'media' | 'resources'
+type TabType = 'projects' | 'profile' | 'experience' | 'testimonials' | 'certifications' | 'services' | 'media' | 'resources' | 'gallery'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -242,6 +243,17 @@ export default function AdminDashboard() {
             >
               <FileText className="w-5 h-5" />
               Resources
+            </button>
+            <button
+              onClick={() => setActiveTab('gallery')}
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === 'gallery'
+                  ? 'text-primary-400 border-primary-500'
+                  : 'text-dark-400 border-transparent hover:text-white'
+              }`}
+            >
+              <GalleryHorizontal className="w-5 h-5" />
+              Gallery
             </button>
           </div>
         </div>
@@ -510,6 +522,15 @@ export default function AdminDashboard() {
               exit={{ opacity: 0, x: -20 }}
             >
               <ResourcesEditor />
+            </motion.div>
+          ) : activeTab === 'gallery' ? (
+            <motion.div
+              key="gallery"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <GalleryEditor />
             </motion.div>
           ) : null}
         </AnimatePresence>
