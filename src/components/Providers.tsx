@@ -15,6 +15,9 @@ import { GalleryProvider } from '@/lib/gallery'
 import { ThemeProvider } from '@/components/ui/ThemeToggle'
 import { LanguageProvider } from '@/lib/i18n'
 import AIChatbot from '@/components/ui/AIChatbot'
+import CookieConsent from '@/components/ui/CookieConsent'
+import BookingScheduler from '@/components/ui/BookingScheduler'
+import SkipToContent from '@/components/ui/SkipToContent'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -33,13 +36,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                       <ResourcesProvider>
                         <GalleryProvider>
                           {/* Skip to main content for accessibility */}
-                          <a
-                            href="#main-content"
-                            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
-                                      bg-primary-600 text-white px-4 py-2 rounded-lg z-50"
-                          >
-                            Skip to main content
-                          </a>
+                          <SkipToContent />
                           
                           {/* Navigation - hidden on admin pages */}
                           {!isAdminPage && <Navbar />}
@@ -54,6 +51,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                           
                           {/* AI Chatbot - visible on all public pages */}
                           {!isAdminPage && <AIChatbot />}
+                          
+                          {/* Booking Scheduler - visible on all public pages */}
+                          {!isAdminPage && <BookingScheduler />}
+                          
+                          {/* Cookie Consent Banner - visible on all pages */}
+                          <CookieConsent />
                         </GalleryProvider>
                       </ResourcesProvider>
                     </ServiceProvider>

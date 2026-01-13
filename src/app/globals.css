@@ -131,4 +131,67 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* RTL Support Utilities */
+  [dir="rtl"] .flip-rtl {
+    transform: scaleX(-1);
+  }
+  
+  /* RTL-aware margins and paddings */
+  [dir="rtl"] .ms-auto {
+    margin-right: auto;
+    margin-left: 0;
+  }
+  
+  [dir="rtl"] .me-auto {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  
+  /* RTL-aware text alignment */
+  [dir="rtl"] .text-start {
+    text-align: right;
+  }
+  
+  [dir="rtl"] .text-end {
+    text-align: left;
+  }
+  
+  /* RTL-aware positioning */
+  [dir="rtl"] .start-0 {
+    right: 0;
+    left: auto;
+  }
+  
+  [dir="rtl"] .end-0 {
+    left: 0;
+    right: auto;
+  }
+  
+  /* RTL-aware flex direction */
+  [dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+  }
+  
+  /* Keep certain elements LTR even in RTL context (like code, numbers) */
+  .ltr-always {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  
+  /* Arabic/RTL font improvements */
+  [dir="rtl"] {
+    font-feature-settings: "liga" 1, "kern" 1;
+  }
+  
+  /* Better Arabic text rendering */
+  [lang="ar"] {
+    font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.8;
+  }
+  
+  /* Chinese text improvements */
+  [lang="zh"] {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
+  }
 }
