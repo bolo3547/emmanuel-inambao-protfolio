@@ -5,6 +5,8 @@ import { ArrowRight, Download, Mail, ChevronDown, Cpu, Zap, Globe } from 'lucide
 import Link from 'next/link'
 import Image from 'next/image'
 import { useProfile } from '@/lib/profile'
+import TypeWriter from '@/components/ui/TypeWriter'
+import AudioIntroduction from '@/components/ui/AudioIntroduction'
 
 export default function Hero() {
   const { profile, isLoading } = useProfile()
@@ -147,7 +149,16 @@ export default function Hero() {
             variants={itemVariants}
             className="text-xl sm:text-2xl md:text-3xl text-dark-300 font-medium mb-6"
           >
-            {profile.title}
+            <TypeWriter 
+              words={[
+                'Electronic Engineer',
+                'IoT Developer',
+                'Robotics Expert',
+                'Full-Stack Engineer',
+                'AI/ML Enthusiast',
+              ]}
+              className="text-primary-400"
+            />
           </motion.p>
 
           {/* Mission statement */}
@@ -194,6 +205,14 @@ export default function Hero() {
           >
             📍 {profile.location}
           </motion.p>
+          
+          {/* Audio Introduction */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-8"
+          >
+            <AudioIntroduction />
+          </motion.div>
         </motion.div>
       </div>
 

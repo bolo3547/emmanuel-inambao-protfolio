@@ -5,14 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Cpu } from 'lucide-react'
 import Link from 'next/link'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import { LanguageSwitcher } from '@/lib/i18n'
 
 // Navigation links configuration
 const navLinks = [
   { href: '#about', label: 'About' },
   { href: '#skills', label: 'Skills' },
   { href: '#projects', label: 'Projects' },
-  { href: '#education', label: 'Education' },
-  { href: '#gallery', label: 'Gallery' },
+  { href: '/case-studies', label: 'Case Studies' },
   { href: '/blog', label: 'Blog' },
   { href: '#contact', label: 'Contact' },
 ]
@@ -66,6 +66,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <LanguageSwitcher />
             <ThemeToggle />
             <Link href="#contact" className="btn-primary text-sm">
               Get In Touch

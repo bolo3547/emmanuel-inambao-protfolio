@@ -9,6 +9,10 @@ import Testimonials from '@/components/sections/Testimonials'
 import Education from '@/components/sections/Education'
 import Gallery from '@/components/sections/Gallery'
 import Contact from '@/components/sections/Contact'
+import AchievementTimeline from '@/components/sections/AchievementTimeline'
+import Newsletter from '@/components/sections/Newsletter'
+import DownloadableResources from '@/components/sections/DownloadableResources'
+import GitHubContributions from '@/components/sections/GitHubContributions'
 
 /**
  * Main portfolio page for Prof. Emmanuel Inambao
@@ -29,11 +33,17 @@ export default function Home() {
       {/* Skills Section - Technical expertise grouped by domain */}
       <Skills />
       
+      {/* GitHub Activity - Show coding contributions */}
+      <GitHubContributions username="emmanuel-inambao" />
+      
       {/* Services Section - What services you offer */}
       <Services />
       
       {/* Projects Section - Featured engineering projects with details */}
       <Projects />
+      
+      {/* Achievement Timeline - Career milestones */}
+      <AchievementTimeline />
       
       {/* Experience Section - Work history timeline */}
       <Experience />
@@ -47,8 +57,14 @@ export default function Home() {
       {/* Education Section - Mentorship and teaching programs */}
       <Education />
       
+      {/* Free Resources - Downloadable guides and templates */}
+      <DownloadableResources />
+      
       {/* Gallery Section - Visual portfolio of builds and diagrams */}
       <Gallery />
+      
+      {/* Newsletter - Email subscription */}
+      <Newsletter />
       
       {/* Contact Section - Get in touch form and contact info */}
       <Contact />

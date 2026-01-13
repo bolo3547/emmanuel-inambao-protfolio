@@ -7,7 +7,7 @@ import {
   Plus, Edit2, Trash2, LogOut, Save, X, Cpu, 
   FolderOpen, ExternalLink, Github, Image as ImageIcon,
   User, Upload, Camera, Check, AlertCircle, Briefcase,
-  Quote, Award, Settings
+  Quote, Award, Settings, Video
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { useProjects, Project } from '@/lib/projects'
@@ -18,8 +18,9 @@ import ExperienceEditor from '@/components/admin/ExperienceEditor'
 import TestimonialEditor from '@/components/admin/TestimonialEditor'
 import CertificationEditor from '@/components/admin/CertificationEditor'
 import ServiceEditor from '@/components/admin/ServiceEditor'
+import MediaUploader from '@/components/admin/MediaUploader'
 
-type TabType = 'projects' | 'profile' | 'experience' | 'testimonials' | 'certifications' | 'services'
+type TabType = 'projects' | 'profile' | 'experience' | 'testimonials' | 'certifications' | 'services' | 'media'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -218,6 +219,17 @@ export default function AdminDashboard() {
             >
               <Settings className="w-5 h-5" />
               Services
+            </button>
+            <button
+              onClick={() => setActiveTab('media')}
+              className={`flex items-center gap-2 px-4 py-4 font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === 'media'
+                  ? 'text-primary-400 border-primary-500'
+                  : 'text-dark-400 border-transparent hover:text-white'
+              }`}
+            >
+              <Video className="w-5 h-5" />
+              Media
             </button>
           </div>
         </div>
@@ -464,6 +476,17 @@ export default function AdminDashboard() {
               exit={{ opacity: 0, x: -20 }}
             >
               <ServiceEditor 
+                onNotify={(type, message) => setNotification({ type, message })}
+              />
+            </motion.div>
+          ) : activeTab === 'media' ? (
+            <motion.div
+              key="media"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <MediaUploader 
                 onNotify={(type, message) => setNotification({ type, message })}
               />
             </motion.div>
